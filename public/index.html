@@ -366,6 +366,13 @@
 
     .error-msg.visible { display: block; }
 
+    .result-actions {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 2rem;
+      flex-wrap: wrap;
+    }
+
     .restart-btn {
       background: none;
       border: 1px solid var(--border);
@@ -374,9 +381,9 @@
       cursor: pointer;
       font-family: 'Georgia', serif;
       font-size: 0.9rem;
-      margin-top: 2rem;
-      padding: 0.7rem 1.5rem;
+      padding: 0.7rem 1.25rem;
       transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
     }
 
     .restart-btn:hover { border-color: var(--accent); color: var(--accent); }
@@ -416,7 +423,7 @@
       <p class="section-title" style="margin-top: 2rem;">Filmajánlások</p>
       <div class="recommendations-grid" id="filmsGrid"></div>
 
-      <div style="display:flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap;">
+      <div class="result-actions">
         <button class="restart-btn" id="backBtn">← Módosítom a kedvenceimet</button>
         <button class="restart-btn" id="restartBtn">✕ Új keresés</button>
       </div>
