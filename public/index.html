@@ -416,7 +416,10 @@
       <p class="section-title" style="margin-top: 2rem;">Filmajánlások</p>
       <div class="recommendations-grid" id="filmsGrid"></div>
 
-      <button class="restart-btn" id="restartBtn">← Új keresés</button>
+      <div style="display:flex; gap: 0.75rem; margin-top: 2rem; flex-wrap: wrap;">
+        <button class="restart-btn" id="backBtn">← Módosítom a kedvenceimet</button>
+        <button class="restart-btn" id="restartBtn">✕ Új keresés</button>
+      </div>
     </div>
   </div>
 
@@ -474,12 +477,27 @@
       document.getElementById('favoritesList').appendChild(createCard(++cardCount));
     });
 
+    // Visszalépés: megtartja a kártyákat, csak az eredményeket törli
+    document.getElementById('backBtn').addEventListener('click', () => {
+      document.getElementById('results').classList.remove('visible');
+      document.getElementById('inputSection').style.display = '';
+      document.getElementById('booksGrid').innerHTML = '';
+      document.getElementById('filmsGrid').innerHTML = '';
+      document.getElementById('tasteProfile').textContent = '';
+    });
+
+    // Új keresés: mindent töröl
     document.getElementById('restartBtn').addEventListener('click', () => {
       document.getElementById('results').classList.remove('visible');
       document.getElementById('inputSection').style.display = '';
       document.getElementById('booksGrid').innerHTML = '';
       document.getElementById('filmsGrid').innerHTML = '';
       document.getElementById('tasteProfile').textContent = '';
+      const list = document.getElementById('favoritesList');
+      list.innerHTML = '';
+      cardCount = 0;
+      list.appendChild(createCard(++cardCount));
+      list.appendChild(createCard(++cardCount));
     });
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
