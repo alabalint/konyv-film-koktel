@@ -8,9 +8,20 @@ app.use(express.static('public'));
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
 
+const REC_ITEM = {
+  type: 'object',
+  properties: {
+    title:   { type: 'string' },
+    year:    { type: 'integer' },
+    creator: { type: 'string' },
+    reason:  { type: 'string', description: 'Személyes, konkrét indoklás 3-5 mondatban' },
+  },
+  required: ['title', 'year', 'creator', 'reason'],
+};
+
 const RECOMMEND_TOOL = {
   name: 'return_recommendations',
-  description: 'Return the taste profile analysis and book/film recommendations.',
+  description: 'Return the taste profile analysis and separate book and film recommendations.',
   input_schema: {
     type: 'object',
     properties: {
@@ -18,24 +29,22 @@ const RECOMMEND_TOOL = {
         type: 'string',
         description: '2-3 mondatos elemzés az ízlésről -- mi a közös szál?',
       },
-      recommendations: {
+      books: {
         type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            title:   { type: 'string' },
-            type:    { type: 'string', enum: ['book', 'film'] },
-            year:    { type: 'integer' },
-            creator: { type: 'string' },
-            reason:  { type: 'string', description: 'Személyes, konkrét indoklás 3-5 mondatban' },
-          },
-          required: ['title', 'type', 'year', 'creator', 'reason'],
-        },
+        description: '5 könyvajánlás',
+        items: REC_ITEM,
+        minItems: 5,
+        maxItems: 5,
+      },
+      films: {
+        type: 'array',
+        description: '5 filmajánlás',
+        items: REC_ITEM,
         minItems: 5,
         maxItems: 5,
       },
     },
-    required: ['taste_profile', 'recommendations'],
+    required: ['taste_profile', 'books', 'films'],
   },
 };
 
@@ -57,8 +66,8 @@ ELEMZÉSI FELADAT -- koncentrálj ezekre:
 - Milyen narratív stílust preferál? (lassú kibontakozás, csavaros szerkezet, lírai próza...)
 
 AJÁNLÁSI SZABÁLYOK:
-- Adj 5 ajánlást (könyv és film vegyesen)
-- Legalább 2 legyen meglepő -- más műfaj, más korszak, más kultúra, de mélyen rezonáló
+- Adj 5 könyvajánlást és 5 filmajánlást külön-külön
+- Legalább 2-2 legyen meglepő -- más műfaj, más korszak, más kultúra, de mélyen rezonáló
 - SOHA ne magyarázd műfaji hasonlósággal -- mutasd meg a mélyebb érzelmi/tematikai rezgést
 - Az indoklás legyen személyes és konkrét, nem általános dicséret
 

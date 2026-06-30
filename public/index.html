@@ -410,8 +410,11 @@
       <p class="section-title">Az ízlésed mintázata</p>
       <div class="taste-profile" id="tasteProfile"></div>
 
-      <p class="section-title">Ajánlásaid</p>
-      <div class="recommendations-grid" id="recsGrid"></div>
+      <p class="section-title">Könyvajánlások</p>
+      <div class="recommendations-grid" id="booksGrid"></div>
+
+      <p class="section-title" style="margin-top: 2rem;">Filmajánlások</p>
+      <div class="recommendations-grid" id="filmsGrid"></div>
 
       <button class="restart-btn" id="restartBtn">← Új keresés</button>
     </div>
@@ -474,7 +477,8 @@
     document.getElementById('restartBtn').addEventListener('click', () => {
       document.getElementById('results').classList.remove('visible');
       document.getElementById('inputSection').style.display = '';
-      document.getElementById('recsGrid').innerHTML = '';
+      document.getElementById('booksGrid').innerHTML = '';
+      document.getElementById('filmsGrid').innerHTML = '';
       document.getElementById('tasteProfile').textContent = '';
     });
 
@@ -527,21 +531,25 @@
         document.getElementById('loading').classList.remove('visible');
         document.getElementById('tasteProfile').textContent = data.taste_profile;
 
-        const grid = document.getElementById('recsGrid');
-        grid.innerHTML = '';
-        data.recommendations.forEach(rec => {
-          const card = document.createElement('div');
-          card.className = 'rec-card';
-          card.innerHTML = `
-            <div class="rec-header">
-              <span class="rec-title">${esc(rec.title)}</span>
-              <span class="rec-badge">${rec.type === 'book' ? 'Könyv' : 'Film'}</span>
-              <span class="rec-meta">${esc(rec.creator)}${rec.year ? ', ' + rec.year : ''}</span>
-            </div>
-            <p class="rec-reason">${esc(rec.reason)}</p>
-          `;
-          grid.appendChild(card);
-        });
+        function renderGrid(gridId, items) {
+          const grid = document.getElementById(gridId);
+          grid.innerHTML = '';
+          items.forEach(rec => {
+            const card = document.createElement('div');
+            card.className = 'rec-card';
+            card.innerHTML = `
+              <div class="rec-header">
+                <span class="rec-title">${esc(rec.title)}</span>
+                <span class="rec-meta">${esc(rec.creator)}${rec.year ? ', ' + rec.year : ''}</span>
+              </div>
+              <p class="rec-reason">${esc(rec.reason)}</p>
+            `;
+            grid.appendChild(card);
+          });
+        }
+
+        renderGrid('booksGrid', data.books);
+        renderGrid('filmsGrid', data.films);
 
         document.getElementById('results').classList.add('visible');
       } catch (err) {
