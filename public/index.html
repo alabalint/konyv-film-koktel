@@ -4,6 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Könyv/Film Koktél</title>
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#8b6f47">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Koktél">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -27,6 +31,8 @@
       --error-text:   #c05050;
       --profile-bg:   #fdf8f2;
       --shadow:       0 1px 3px rgba(0,0,0,0.07);
+      --skeleton:     #e8e2da;
+      --skeleton-shine:#f0ece5;
     }
 
     [data-theme="dark"] {
@@ -49,6 +55,8 @@
       --error-text:   #d08080;
       --profile-bg:   #1a1815;
       --shadow:       none;
+      --skeleton:     #2a2520;
+      --skeleton-shine:#332e28;
     }
 
     body {
@@ -60,10 +68,7 @@
       transition: background 0.25s, color 0.25s;
     }
 
-    .container {
-      max-width: 720px;
-      margin: 0 auto;
-    }
+    .container { max-width: 720px; margin: 0 auto; }
 
     header {
       text-align: center;
@@ -85,7 +90,6 @@
       font-size: 1rem;
     }
 
-    /* Theme toggle */
     .theme-toggle {
       position: absolute;
       top: 0.25rem;
@@ -94,9 +98,6 @@
       border: 1px solid var(--border);
       border-radius: 20px;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 0.35rem;
       padding: 0.35rem 0.75rem;
       font-family: inherit;
       font-size: 0.8rem;
@@ -104,11 +105,7 @@
       transition: border-color 0.2s, color 0.2s;
       box-shadow: var(--shadow);
     }
-
-    .theme-toggle:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
+    .theme-toggle:hover { border-color: var(--accent); color: var(--accent); }
 
     .section-title {
       font-size: 0.8rem;
@@ -118,9 +115,8 @@
       margin-bottom: 1.25rem;
     }
 
-    .favorites-section {
-      margin-bottom: 2rem;
-    }
+    /* Favorite cards */
+    .favorites-section { margin-bottom: 2rem; }
 
     .favorite-card {
       background: var(--bg-card);
@@ -138,10 +134,12 @@
       gap: 0.75rem;
       margin-bottom: 0.75rem;
       align-items: center;
+      flex-wrap: wrap;
     }
 
     .favorite-card input[type="text"] {
       flex: 1;
+      min-width: 0;
       background: var(--bg-input);
       border: 1px solid var(--border);
       border-radius: 6px;
@@ -150,16 +148,10 @@
       font-size: 0.95rem;
       padding: 0.6rem 0.85rem;
       outline: none;
-      transition: border-color 0.2s, background 0.25s;
+      transition: border-color 0.2s;
     }
-
-    .favorite-card input[type="text"]:focus {
-      border-color: var(--border-focus);
-    }
-
-    .favorite-card input[type="text"]::placeholder {
-      color: var(--text-dim);
-    }
+    .favorite-card input[type="text"]:focus { border-color: var(--border-focus); }
+    .favorite-card input[type="text"]::placeholder { color: var(--text-dim); }
 
     .type-toggle {
       display: flex;
@@ -169,7 +161,6 @@
       overflow: hidden;
       flex-shrink: 0;
     }
-
     .type-toggle button {
       background: none;
       border: none;
@@ -180,12 +171,7 @@
       padding: 0.6rem 0.9rem;
       transition: background 0.15s, color 0.15s;
     }
-
-    .type-toggle button.active {
-      background: var(--toggle-active);
-      color: var(--accent);
-      font-weight: bold;
-    }
+    .type-toggle button.active { background: var(--toggle-active); color: var(--accent); font-weight: bold; }
 
     .favorite-card textarea {
       width: 100%;
@@ -199,17 +185,11 @@
       resize: vertical;
       min-height: 72px;
       outline: none;
-      transition: border-color 0.2s, background 0.25s;
+      transition: border-color 0.2s;
       line-height: 1.5;
     }
-
-    .favorite-card textarea:focus {
-      border-color: var(--border-focus);
-    }
-
-    .favorite-card textarea::placeholder {
-      color: var(--text-dim);
-    }
+    .favorite-card textarea:focus { border-color: var(--border-focus); }
+    .favorite-card textarea::placeholder { color: var(--text-dim); }
 
     .remove-btn {
       position: absolute;
@@ -224,7 +204,6 @@
       padding: 0.1rem 0.3rem;
       transition: color 0.15s;
     }
-
     .remove-btn:hover { color: var(--error-text); }
 
     .add-btn {
@@ -240,12 +219,37 @@
       width: 100%;
       transition: border-color 0.2s, color 0.2s;
     }
+    .add-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    .add-btn:hover {
-      border-color: var(--accent);
-      color: var(--accent);
+    /* Mood selector */
+    .mood-section { margin-bottom: 1.5rem; }
+
+    .mood-options {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
     }
 
+    .mood-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.85rem;
+      padding: 0.45rem 1rem;
+      transition: all 0.15s;
+      box-shadow: var(--shadow);
+    }
+    .mood-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .mood-btn.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    /* Submit */
     .submit-btn {
       background: var(--accent);
       border: none;
@@ -261,32 +265,34 @@
       transition: background 0.2s;
       box-shadow: var(--shadow);
     }
-
     .submit-btn:hover { background: var(--accent-hover); }
     .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .loading {
-      display: none;
-      text-align: center;
-      padding: 2rem;
-      color: var(--text-muted);
-      font-style: italic;
-    }
-
+    /* Skeleton loading */
+    .loading { display: none; }
     .loading.visible { display: block; }
 
-    .dots::after {
-      content: '';
-      animation: dots 1.4s steps(4, end) infinite;
+    .skeleton-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
     }
 
-    @keyframes dots {
-      0%, 20% { content: ''; }
-      40% { content: '.'; }
-      60% { content: '..'; }
-      80%, 100% { content: '...'; }
+    .skeleton-line {
+      background: var(--skeleton);
+      border-radius: 4px;
+      margin-bottom: 0.6rem;
+      animation: pulse 1.6s ease-in-out infinite;
     }
 
+    @keyframes pulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+
+    /* Results */
     .results { display: none; }
     .results.visible { display: block; }
 
@@ -306,66 +312,96 @@
       display: flex;
       flex-direction: column;
       gap: 1rem;
+      margin-bottom: 1rem;
     }
 
     .rec-card {
       background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 1.5rem;
+      padding: 1.25rem 1.5rem;
       box-shadow: var(--shadow);
-      transition: border-color 0.2s, background 0.25s;
+      transition: border-color 0.2s;
     }
-
     .rec-card:hover { border-color: var(--accent); }
 
     .rec-header {
       display: flex;
-      align-items: baseline;
+      align-items: flex-start;
       gap: 0.75rem;
-      margin-bottom: 0.75rem;
-      flex-wrap: wrap;
+      margin-bottom: 0.6rem;
     }
 
-    .rec-title {
-      font-size: 1.15rem;
-      color: var(--text);
-    }
+    .rec-header-left { flex: 1; min-width: 0; }
 
-    .rec-meta {
-      font-size: 0.8rem;
-      color: var(--text-muted);
-    }
-
-    .rec-badge {
-      background: var(--badge-bg);
-      border-radius: 4px;
-      color: var(--badge-text);
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
-      padding: 0.2rem 0.5rem;
-      text-transform: uppercase;
-      font-family: sans-serif;
-    }
+    .rec-title { font-size: 1.1rem; color: var(--text); display: block; }
+    .rec-meta { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.2rem; display: block; }
 
     .rec-reason {
       color: var(--text-muted);
       font-size: 0.92rem;
       line-height: 1.7;
+      margin-bottom: 0.75rem;
     }
 
-    .error-msg {
-      background: var(--error-bg);
-      border: 1px solid var(--error-border);
+    /* Rating */
+    .rec-rating {
+      display: flex;
+      gap: 0.4rem;
+      justify-content: flex-end;
+    }
+
+    .rate-btn {
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+      padding: 0.25rem 0.6rem;
+      transition: all 0.15s;
+      opacity: 0.5;
+    }
+    .rate-btn:hover { opacity: 1; border-color: var(--accent); }
+    .rate-btn.active-up { opacity: 1; background: #e8f5e9; border-color: #66bb6a; }
+    .rate-btn.active-down { opacity: 1; background: #fce4e4; border-color: #ef9a9a; }
+    [data-theme="dark"] .rate-btn.active-up { background: #1a2e1a; border-color: #4a8a4a; }
+    [data-theme="dark"] .rate-btn.active-down { background: #2e1a1a; border-color: #8a4a4a; }
+
+    /* More button */
+    .more-btn {
+      background: none;
+      border: 1px dashed var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.75rem;
+      text-align: center;
+      width: 100%;
+      transition: border-color 0.2s, color 0.2s;
+      margin-bottom: 2rem;
+    }
+    .more-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .more-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    /* Share */
+    .share-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
       border-radius: 8px;
-      color: var(--error-text);
-      display: none;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 0.9rem;
+      padding: 0.7rem 1.25rem;
+      transition: border-color 0.2s, color 0.2s;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
     }
+    .share-btn:hover { border-color: var(--accent); color: var(--accent); }
 
-    .error-msg.visible { display: block; }
-
+    /* Result actions */
     .result-actions {
       display: flex;
       gap: 0.75rem;
@@ -385,8 +421,31 @@
       transition: border-color 0.2s, color 0.2s;
       white-space: nowrap;
     }
-
     .restart-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* Readonly banner */
+    .readonly-banner {
+      background: var(--accent-light);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      font-style: italic;
+      padding: 0.85rem 1.25rem;
+      margin-bottom: 2rem;
+      text-align: center;
+    }
+
+    .error-msg {
+      background: var(--error-bg);
+      border: 1px solid var(--error-border);
+      border-radius: 8px;
+      color: var(--error-text);
+      display: none;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+    }
+    .error-msg.visible { display: block; }
   </style>
 </head>
 <body>
@@ -394,7 +453,7 @@
     <header>
       <h1>Könyv/Film Koktél</h1>
       <p>Mondd el, mit szerettél — felfedjük, miért, és mit keress ezután.</p>
-      <button class="theme-toggle" id="themeToggle">☀️ Világos</button>
+      <button class="theme-toggle" id="themeToggle">🌙 Sötét</button>
     </header>
 
     <div id="inputSection">
@@ -404,26 +463,60 @@
         <button class="add-btn" id="addBtn">+ Újabb kedvenc hozzáadása</button>
       </div>
 
-      <div class="error-msg" id="errorMsg"></div>
+      <div class="mood-section">
+        <p class="section-title">Milyen hangulatot keresel most? <span style="font-style:italic;text-transform:none;letter-spacing:0">(opcionális)</span></p>
+        <div class="mood-options">
+          <button class="mood-btn" data-mood="light">☀️ Könnyű</button>
+          <button class="mood-btn" data-mood="medium">🌤 Kiegyensúlyozott</button>
+          <button class="mood-btn" data-mood="deep">🌊 Mély</button>
+          <button class="mood-btn" data-mood="exciting">⚡ Izgalmas</button>
+        </div>
+      </div>
 
+      <div class="error-msg" id="errorMsg"></div>
       <button class="submit-btn" id="submitBtn">Készítsd el az ajánlómat →</button>
     </div>
 
     <div class="loading" id="loading">
-      <span class="dots">Elemzem az ízlésedet</span>
+      <p class="section-title" style="margin-bottom:1rem">Elemzem az ízlésedet</p>
+      <div class="skeleton-card">
+        <div class="skeleton-line" style="height:18px;width:55%"></div>
+        <div class="skeleton-line" style="height:12px;width:30%"></div>
+        <div class="skeleton-line" style="height:12px;width:100%;margin-top:0.5rem"></div>
+        <div class="skeleton-line" style="height:12px;width:90%"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-line" style="height:18px;width:45%"></div>
+        <div class="skeleton-line" style="height:12px;width:35%"></div>
+        <div class="skeleton-line" style="height:12px;width:100%;margin-top:0.5rem"></div>
+        <div class="skeleton-line" style="height:12px;width:80%"></div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-line" style="height:18px;width:60%"></div>
+        <div class="skeleton-line" style="height:12px;width:25%"></div>
+        <div class="skeleton-line" style="height:12px;width:100%;margin-top:0.5rem"></div>
+        <div class="skeleton-line" style="height:12px;width:85%"></div>
+      </div>
     </div>
 
     <div class="results" id="results">
+      <div id="readonlyBanner" class="readonly-banner" style="display:none">
+        Valaki megosztotta veled ezt az ajánlót. <a href="/" style="color:var(--accent)">Készítsd el a sajátodat →</a>
+      </div>
+
       <p class="section-title">Az ízlésed mintázata</p>
       <div class="taste-profile" id="tasteProfile"></div>
 
-      <p class="section-title">Könyvajánlások</p>
+      <p class="section-title">📖 Könyvajánlások</p>
       <div class="recommendations-grid" id="booksGrid"></div>
+      <button class="more-btn" id="moreBooksBtn">＋ Még 3 könyv</button>
 
-      <p class="section-title" style="margin-top: 2rem;">Filmajánlások</p>
+      <p class="section-title">🎬 Filmajánlások</p>
       <div class="recommendations-grid" id="filmsGrid"></div>
+      <button class="more-btn" id="moreFilmsBtn">＋ Még 3 film</button>
 
       <div class="result-actions">
+        <button class="share-btn" id="shareBtn">🔗 Megosztás</button>
         <button class="restart-btn" id="backBtn">← Módosítom a kedvenceimet</button>
         <button class="restart-btn" id="restartBtn">✕ Új keresés</button>
       </div>
@@ -432,17 +525,17 @@
 
   <script>
     let cardCount = 0;
+    let currentFavorites = [];
+    let currentMood = null;
+    let ratings = {};
+    let isReadonly = false;
 
     // Theme
     const html = document.documentElement;
     const themeBtn = document.getElementById('themeToggle');
+    setTheme(localStorage.getItem('theme') || 'light');
 
-    const saved = localStorage.getItem('theme') || 'light';
-    setTheme(saved);
-
-    themeBtn.addEventListener('click', () => {
-      setTheme(html.dataset.theme === 'light' ? 'dark' : 'light');
-    });
+    themeBtn.addEventListener('click', () => setTheme(html.dataset.theme === 'light' ? 'dark' : 'light'));
 
     function setTheme(t) {
       html.dataset.theme = t;
@@ -450,6 +543,21 @@
       themeBtn.textContent = t === 'light' ? '🌙 Sötét' : '☀️ Világos';
     }
 
+    // Mood
+    document.querySelectorAll('.mood-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        if (btn.classList.contains('active')) {
+          btn.classList.remove('active');
+          currentMood = null;
+        } else {
+          document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          currentMood = btn.dataset.mood;
+        }
+      });
+    });
+
+    // Cards
     function createCard(index) {
       const card = document.createElement('div');
       card.className = 'favorite-card';
@@ -459,18 +567,17 @@
         <div class="row">
           <input type="text" placeholder="Cím (pl. Tóth Erzsébet / Parasite)" class="title-input">
           <div class="type-toggle">
-            <button class="active" data-type="book" onclick="setType(this, 'book')">📖 Könyv</button>
-            <button data-type="film" onclick="setType(this, 'film')">🎬 Film</button>
+            <button class="active" data-type="book" onclick="setType(this)">📖 Könyv</button>
+            <button data-type="film" onclick="setType(this)">🎬 Film</button>
           </div>
         </div>
-        <textarea placeholder="Miért szeretted? Milyen érzés volt? Mi maradt meg belőle? (Minél őszintébb vagy, annál jobb lesz az ajánlás.)"></textarea>
+        <textarea placeholder="Miért szeretted? Milyen érzés volt? Mi maradt meg belőle?"></textarea>
       `;
       return card;
     }
 
-    function setType(btn, type) {
-      const toggle = btn.closest('.type-toggle');
-      toggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    function setType(btn) {
+      btn.closest('.type-toggle').querySelectorAll('button').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
     }
 
@@ -484,29 +591,7 @@
       document.getElementById('favoritesList').appendChild(createCard(++cardCount));
     });
 
-    // Visszalépés: megtartja a kártyákat, csak az eredményeket törli
-    document.getElementById('backBtn').addEventListener('click', () => {
-      document.getElementById('results').classList.remove('visible');
-      document.getElementById('inputSection').style.display = '';
-      document.getElementById('booksGrid').innerHTML = '';
-      document.getElementById('filmsGrid').innerHTML = '';
-      document.getElementById('tasteProfile').textContent = '';
-    });
-
-    // Új keresés: mindent töröl
-    document.getElementById('restartBtn').addEventListener('click', () => {
-      document.getElementById('results').classList.remove('visible');
-      document.getElementById('inputSection').style.display = '';
-      document.getElementById('booksGrid').innerHTML = '';
-      document.getElementById('filmsGrid').innerHTML = '';
-      document.getElementById('tasteProfile').textContent = '';
-      const list = document.getElementById('favoritesList');
-      list.innerHTML = '';
-      cardCount = 0;
-      list.appendChild(createCard(++cardCount));
-      list.appendChild(createCard(++cardCount));
-    });
-
+    // Submit
     document.getElementById('submitBtn').addEventListener('click', async () => {
       const cards = document.querySelectorAll('.favorite-card');
       const favorites = [];
@@ -515,24 +600,18 @@
       cards.forEach(card => {
         const title = card.querySelector('.title-input').value.trim();
         const why = card.querySelector('textarea').value.trim();
-        const activeType = card.querySelector('.type-toggle .active');
-        const type = activeType ? activeType.dataset.type : 'book';
-
-        if (title && why) {
-          favorites.push({ title, type, why });
-        } else if (title || why) {
-          valid = false;
-        }
+        const active = card.querySelector('.type-toggle .active');
+        const type = active ? active.dataset.type : 'book';
+        if (title && why) favorites.push({ title, type, why });
+        else if (title || why) valid = false;
       });
 
       const errorEl = document.getElementById('errorMsg');
-
       if (favorites.length === 0) {
         errorEl.textContent = 'Adj meg legalább egy kedvencet (cím + miért szeretted).';
         errorEl.classList.add('visible');
         return;
       }
-
       if (!valid) {
         errorEl.textContent = 'Minden megkezdett kártyánál töltsd ki a cimet és az indoklást is.';
         errorEl.classList.add('visible');
@@ -540,6 +619,8 @@
       }
 
       errorEl.classList.remove('visible');
+      currentFavorites = favorites;
+      ratings = {};
       document.getElementById('inputSection').style.display = 'none';
       document.getElementById('loading').classList.add('visible');
 
@@ -547,36 +628,12 @@
         const res = await fetch('/recommend', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ favorites }),
+          body: JSON.stringify({ favorites, mood: currentMood }),
         });
-
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Ismeretlen hiba');
-
         document.getElementById('loading').classList.remove('visible');
-        document.getElementById('tasteProfile').textContent = data.taste_profile;
-
-        function renderGrid(gridId, items) {
-          const grid = document.getElementById(gridId);
-          grid.innerHTML = '';
-          items.forEach(rec => {
-            const card = document.createElement('div');
-            card.className = 'rec-card';
-            card.innerHTML = `
-              <div class="rec-header">
-                <span class="rec-title">${esc(rec.title)}</span>
-                <span class="rec-meta">${esc(rec.creator)}${rec.year ? ', ' + rec.year : ''}</span>
-              </div>
-              <p class="rec-reason">${esc(rec.reason)}</p>
-            `;
-            grid.appendChild(card);
-          });
-        }
-
-        renderGrid('booksGrid', data.books);
-        renderGrid('filmsGrid', data.films);
-
-        document.getElementById('results').classList.add('visible');
+        showResults(data);
       } catch (err) {
         document.getElementById('loading').classList.remove('visible');
         document.getElementById('inputSection').style.display = '';
@@ -585,16 +642,173 @@
       }
     });
 
-    function esc(str) {
-      return String(str ?? '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+    function showResults(data, readonly) {
+      isReadonly = !!readonly;
+      document.getElementById('tasteProfile').textContent = data.taste_profile;
+
+      renderGrid('booksGrid', data.books || []);
+      renderGrid('filmsGrid', data.films || []);
+
+      document.getElementById('readonlyBanner').style.display = readonly ? '' : 'none';
+      document.getElementById('moreBooksBtn').style.display = readonly ? 'none' : '';
+      document.getElementById('moreFilmsBtn').style.display = readonly ? 'none' : '';
+      document.getElementById('shareBtn').style.display = readonly ? 'none' : '';
+      document.getElementById('backBtn').style.display = readonly ? 'none' : '';
+      document.getElementById('restartBtn').textContent = readonly ? '← Saját keresés' : '✕ Új keresés';
+
+      document.getElementById('results').classList.add('visible');
+
+      if (!readonly) {
+        // Encode to URL hash for sharing
+        const encoded = btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+        history.replaceState(null, '', '#data=' + encoded);
+      }
     }
 
+    function renderGrid(gridId, items) {
+      const grid = document.getElementById(gridId);
+      items.forEach(rec => grid.appendChild(createRecCard(rec)));
+    }
+
+    function createRecCard(rec) {
+      const card = document.createElement('div');
+      card.className = 'rec-card';
+      card.innerHTML = `
+        <div class="rec-header">
+          <div class="rec-header-left">
+            <span class="rec-title">${esc(rec.title)}</span>
+            <span class="rec-meta">${esc(rec.creator)}${rec.year ? ', ' + rec.year : ''}</span>
+          </div>
+          ${isReadonly ? '' : `
+          <div class="rec-rating">
+            <button class="rate-btn" data-dir="up" data-title="${esc(rec.title)}" onclick="rate(this)">👍</button>
+            <button class="rate-btn" data-dir="down" data-title="${esc(rec.title)}" onclick="rate(this)">👎</button>
+          </div>`}
+        </div>
+        <p class="rec-reason">${esc(rec.reason)}</p>
+      `;
+      return card;
+    }
+
+    function rate(btn) {
+      const title = btn.dataset.title;
+      const dir = btn.dataset.dir;
+      const card = btn.closest('.rec-rating');
+      const current = ratings[title];
+
+      if (current === dir) {
+        delete ratings[title];
+        card.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active-up', 'active-down'));
+      } else {
+        ratings[title] = dir;
+        card.querySelectorAll('.rate-btn').forEach(b => b.classList.remove('active-up', 'active-down'));
+        btn.classList.add(dir === 'up' ? 'active-up' : 'active-down');
+      }
+    }
+
+    // More buttons
+    document.getElementById('moreBooksBtn').addEventListener('click', () => loadMore('book'));
+    document.getElementById('moreFilmsBtn').addEventListener('click', () => loadMore('film'));
+
+    async function loadMore(type) {
+      const btn = document.getElementById(type === 'book' ? 'moreBooksBtn' : 'moreFilmsBtn');
+      const grid = document.getElementById(type === 'book' ? 'booksGrid' : 'filmsGrid');
+      const existing = Array.from(grid.querySelectorAll('.rec-title')).map(el => ({
+        title: el.textContent,
+        creator: '', year: 0,
+      }));
+
+      btn.disabled = true;
+      btn.textContent = 'Betöltés...';
+
+      try {
+        const res = await fetch('/more', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ favorites: currentFavorites, existing, type, mood: currentMood, ratings }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Ismeretlen hiba');
+        renderGrid(type === 'book' ? 'booksGrid' : 'filmsGrid', data.items || []);
+        btn.textContent = type === 'book' ? '＋ Még 3 könyv' : '＋ Még 3 film';
+      } catch (err) {
+        btn.textContent = 'Hiba: ' + err.message;
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Share
+    document.getElementById('shareBtn').addEventListener('click', async () => {
+      const url = window.location.href;
+      try {
+        await navigator.clipboard.writeText(url);
+        const btn = document.getElementById('shareBtn');
+        btn.textContent = '✓ Link másolva!';
+        setTimeout(() => btn.textContent = '🔗 Megosztás', 2000);
+      } catch {
+        prompt('Másold ki a linket:', url);
+      }
+    });
+
+    // Back / restart
+    document.getElementById('backBtn').addEventListener('click', () => {
+      history.replaceState(null, '', window.location.pathname);
+      document.getElementById('results').classList.remove('visible');
+      document.getElementById('booksGrid').innerHTML = '';
+      document.getElementById('filmsGrid').innerHTML = '';
+      document.getElementById('tasteProfile').textContent = '';
+      document.getElementById('inputSection').style.display = '';
+    });
+
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      history.replaceState(null, '', window.location.pathname);
+      document.getElementById('results').classList.remove('visible');
+      document.getElementById('booksGrid').innerHTML = '';
+      document.getElementById('filmsGrid').innerHTML = '';
+      document.getElementById('tasteProfile').textContent = '';
+
+      if (isReadonly) {
+        window.location.href = '/';
+        return;
+      }
+
+      document.getElementById('inputSection').style.display = '';
+      const list = document.getElementById('favoritesList');
+      list.innerHTML = '';
+      cardCount = 0;
+      list.appendChild(createCard(++cardCount));
+      list.appendChild(createCard(++cardCount));
+      currentMood = null;
+      document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+    });
+
+    function esc(str) {
+      return String(str ?? '')
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // Init cards
     document.getElementById('favoritesList').appendChild(createCard(++cardCount));
     document.getElementById('favoritesList').appendChild(createCard(++cardCount));
+
+    // Load from URL hash (shared link)
+    if (location.hash.startsWith('#data=')) {
+      try {
+        const json = decodeURIComponent(escape(atob(location.hash.slice(6))));
+        const data = JSON.parse(json);
+        document.getElementById('inputSection').style.display = 'none';
+        showResults(data, true);
+      } catch {
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
+    // PWA service worker
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw.js').catch(() => {});
+    }
   </script>
 </body>
 </html>
